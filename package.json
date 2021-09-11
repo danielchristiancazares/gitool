@@ -1,0 +1,49 @@
+{
+  "name": "gitool",
+  "description": "Compare two branches in GitHub.",
+  "version": "0.0.1",
+  "author": "Daniel Cazares @danielchristiancazares",
+  "bin": {
+    "gitool": "./bin/run"
+  },
+  "bugs": "https://github.com/danielchristiancazares/gitool/issues",
+  "dependencies": {
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/eslint-parser": "^7.15.4",
+    "@oclif/dev-cli": "^1",
+    "@oclif/test": "^1",
+    "chai": "^4",
+    "eslint": "^5.13",
+    "eslint-config-oclif": "^3.1",
+    "mocha": "^5",
+    "nyc": "^14"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/src"
+  ],
+  "homepage": "https://github.com/danielchristiancazares/gitool",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "oclif": {
+    "bin": "gitool"
+  },
+  "repository": "danielchristiancazares/gitool",
+  "scripts": {
+    "posttest": "eslint .",
+    "prepack": "oclif-dev readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}

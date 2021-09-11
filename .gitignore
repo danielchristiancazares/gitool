@@ -102,3 +102,11 @@ dist
 
 # TernJS port file
 .tern-port
+=======
+*-debug.log
+*-error.log
+/.nyc_output
+/dist
+/package-lock.json
+/tmp
+node_modules
