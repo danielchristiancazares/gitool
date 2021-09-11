@@ -1,7 +1,4 @@
 # gitool
-=======
-gitool
-======
 
 Compare two branches in GitHub.
 
