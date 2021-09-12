@@ -11,6 +11,7 @@
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^3",
+    "axios": "^0.21.4",
     "cli-ux": "^5.6.3"
   },
   "devDependencies": {
@@ -37,7 +38,7 @@
   "keywords": [
     "oclif"
   ],
-  "license": "MIT",
+  "license": "Apache",
   "main": "src/index.js",
   "oclif": {
     "bin": "gitool",

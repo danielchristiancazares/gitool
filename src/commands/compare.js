@@ -1,4 +1,6 @@
 const {Command, flags} = require('@oclif/command')
+const axios = require('axios')
+const config = require('../../config.json')
 
 class CompareCommand extends Command {
   static description = "Compare two branches in GitHub."
@@ -49,8 +51,20 @@ class CompareCommand extends Command {
 
   async run() {
     const {flags} = this.parse(CompareCommand)
-    const config = require('../../config.json')
     const token = config.TOKEN || 'undefined'
+    const options = 
+    axios.get("https://api.github.com/repos/danielchristiancazares/gitool/compare/develop...main",{
+      method: 'GET',
+      headers: {
+        'Accept': 'Accept: application/vnd.github.v3+json',
+        'User-Agent': 'gitool-app',
+        'Authorization': `Basic ${token}`
+      }
+    })
+    .then(res => { console.log(res.data) })
+    .catch(function (error) {
+      console.log("Error!");
+    });
     this.log(`Using ${token}`)
   }
 }
