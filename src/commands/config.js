@@ -1,7 +1,7 @@
 const {Command, flags} = require('@oclif/command')
 const {cli} = require('cli-ux')
 
-class GitoolCommand extends Command {
+class ConfigCommand extends Command {
   async run() {
     const organization = await cli.prompt('GitHub Username or Organization')
     const repository = await cli.prompt('GitHub Repository',{required: false})
@@ -9,4 +9,4 @@ class GitoolCommand extends Command {
     const confirm = await cli.confirm('Continue? (Y/n)')
   }
 }
-module.exports = GitoolCommand
+module.exports = ConfigCommand

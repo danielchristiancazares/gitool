@@ -1,6 +1,6 @@
 const {Command, flags} = require('@oclif/command')
 
-class GitoolCommand extends Command {
+class CompareCommand extends Command {
   static description = "Compare two branches in GitHub."
   static strict = false
   static flags = {
@@ -48,9 +48,10 @@ class GitoolCommand extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(GitoolCommand)
-    const name = flags.name || 'world'
-    this.log(`hello ${name} from ./src/index.js`)
+    const {flags} = this.parse(CompareCommand)
+    const config = require('../../config.json')
+    const token = config.TOKEN || 'undefined'
+    this.log(`Using ${token}`)
   }
 }
-module.exports = GitoolCommand
+module.exports = CompareCommand
