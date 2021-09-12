@@ -53,7 +53,8 @@ class CompareCommand extends Command {
     const {flags} = this.parse(CompareCommand)
     const token = config.TOKEN || 'undefined'
     const options = 
-    axios.get("https://api.github.com/repos/danielchristiancazares/gitool/compare/develop...main",{
+    axios.request({
+      url: 'https://api.github.com/repos/danielchristiancazares/gitool/compare/main...develop',
       method: 'GET',
       headers: {
         'Accept': 'Accept: application/vnd.github.v3+json',
