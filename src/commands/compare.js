@@ -52,21 +52,39 @@ class CompareCommand extends Command {
   async run() {
     const {flags} = this.parse(CompareCommand)
     const token = config.TOKEN || 'undefined'
-    const options = 
-    axios.request({
-      url: 'https://api.github.com/repos/danielchristiancazares/gitool/compare/main...develop',
+    const org = flags.organization
+    const repo = flags.repository
+    const base = flags.base
+    const head = flags.head 
+    
+    const options = {
+      url: `https://api.github.com/repos/${org}/${repo}/compare/${base}...${head}`,
       method: 'GET',
       headers: {
         'Accept': 'Accept: application/vnd.github.v3+json',
         'User-Agent': 'gitool-app',
         'Authorization': `Basic ${token}`
+      },
+      timeout: 30000 // 30 second timeout
+    };
+
+    axios.request(options)
+    .then(res => { 
+      res.data.commits.forEach( x =>
+        console.log(x.commit.message)
+      )
+    }).catch(err => this.throwErorr(err));
+  };
+
+  throwErorr(error) {
+    if (!!error.response) {
+      if(error.response.status === 404) {
+        this.log("Could not find one or both of the branches.");
       }
-    })
-    .then(res => { console.log(res.data) })
-    .catch(function (error) {
-      console.log("Error!");
-    });
-    this.log(`Using ${token}`)
-  }
-}
-module.exports = CompareCommand
+      if(error.response.status === 403) {
+        this.log("You are forbidden.")
+      }
+    }
+  };
+};
+module.exports = CompareCommand;
