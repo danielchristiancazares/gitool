@@ -1,13 +1,12 @@
-const {Command, flags} = require('@oclif/command')
-const axios = require('axios')
-const config = require('../../config.json')
+const { Command, flags } = require('@oclif/command');
+const axios = require('axios');
+const { readConfig, readConfigSync } = require('../config.js')
 
 class CompareCommand extends Command {
   static description = "Compare two branches in GitHub."
-  static strict = false
   static flags = {
     version: flags.version(),
-    verbose: flags.boolean({char: 'v'}),
+    verbose: flags.boolean({ char: 'v' }),
     help: flags.help(),
     organization: flags.string({
       char: 'o',
@@ -15,7 +14,7 @@ class CompareCommand extends Command {
       description: 'GitHub Organization',
       hidden: false,
       multiple: false,
-      default: undefined,
+      default: () => readConfigSync('organization'),
       required: false,
     }),
     repository: flags.string({
@@ -24,12 +23,12 @@ class CompareCommand extends Command {
       description: 'GitHub Repository',
       hidden: false,
       multiple: false,
-      default: undefined,
+      default: () => readConfigSync('repository'),
       required: false,
     }),
     base: flags.string({
       char: 'b',
-      helpValue: '<base-ref>',
+      helpValue: '<branch>',
       description: 'GitHub Repository Base Commit',
       hidden: false,
       multiple: false,
@@ -39,7 +38,7 @@ class CompareCommand extends Command {
     }),
     head: flags.string({
       char: 'h',
-      helpValue: '<head-ref>',
+      helpValue: '<branch>',
       description: 'GitHub Repository Head Commit',
       hidden: false,
       multiple: false,
@@ -47,44 +46,54 @@ class CompareCommand extends Command {
       required: true,
       dependsOn: ['base'],
     }),
+    token: flags.string({
+      char: 't',
+      helpValue: '<token>',
+      description: 'GitHub Personal Access Token',
+      hidden: true,
+      multiple: false,
+      default: () => readConfigSync('token'),
+      required: true
+    }),
   }
 
   async run() {
-    const {flags} = this.parse(CompareCommand)
-    const token = config.TOKEN || 'undefined'
+    const { flags } = this.parse(CompareCommand)
+    const token = await readConfig('token')
     const org = flags.organization
     const repo = flags.repository
     const base = flags.base
-    const head = flags.head 
-    
+    const head = flags.head
+
     const options = {
-      url: `https://api.github.com/repos/${org}/${repo}/compare/${base}...${head}`,
       method: 'GET',
+      baseURL: 'https://api.github.com',
       headers: {
-        'Accept': 'Accept: application/vnd.github.v3+json',
-        'User-Agent': 'gitool-app',
-        'Authorization': `Basic ${token}`
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': `gitool/${org}`,
+        'Authorization': `Basic ${Buffer.from(token).toString('base64')}`
       },
-      timeout: 30000 // 30 second timeout
-    };
-
-    axios.request(options)
-    .then(res => { 
-      res.data.commits.forEach( x =>
-        console.log(x.commit.message)
-      )
-    }).catch(err => this.throwErorr(err));
-  };
-
-  throwErorr(error) {
-    if (!!error.response) {
-      if(error.response.status === 404) {
-        this.log("Could not find one or both of the branches.");
-      }
-      if(error.response.status === 403) {
-        this.log("You are forbidden.")
-      }
+      timeout: 30000
     }
-  };
-};
+
+    if (token === undefined) {
+      throw new Error("No GitHub Personal Access Token.");
+    }
+
+    try {
+      // Bulk fetch of commits objects
+      // const response = await axios.all([
+      //   axios.request(`/repos/${org}/${repo}/commits`, { ...options, ...{ params: { sha: `${head}`, per_page: 1 } } }),
+      //   axios.request(`/repos/${org}/${repo}/commits`, { ...options, ...{ params: { sha: `${base}`, per_page: 1 } } })
+      // ])
+      // console.log(response[0]?.data[0])
+      // console.log(response[1]?.data[0])
+      const response = await axios.request(`/repos/${org}/${repo}/compare/${org}:${base}...${org}:${head}`, options)
+      console.log(response?.data)
+    } catch (err) {
+      this.error(err)
+    }
+  }
+}
+
 module.exports = CompareCommand;
